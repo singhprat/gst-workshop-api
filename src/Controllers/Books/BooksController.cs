@@ -7,24 +7,24 @@ namespace Workshop_POC.Controllers.Books
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly BookService _bookRepository;
+        private readonly BookService _bookService;
 
-        public BooksController(BookService bookRepository)
+        public BooksController(BookService bookService)
         {
-            _bookRepository = bookRepository;
+            _bookService = bookService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> Get()
         {
-            return Ok(await _bookRepository.GetAllBooksAsync());
+            return Ok(await _bookService.GetAllBooksAsync());
         }
 
         // Add endpoints for POST, PUT, and DELETE
         [HttpPost]
         public async Task<ActionResult<Book>> Post([FromBody] Book book)
         {
-            var newBookId = await _bookRepository.CreateBookAsync(book);
+            var newBookId = await _bookService.CreateBookAsync(book);
             if (newBookId == 0) return BadRequest();
             return CreatedAtAction(nameof(Get), new { id = newBookId }, book);
         }
@@ -34,7 +34,7 @@ namespace Workshop_POC.Controllers.Books
         {
             if (id != book.BookId) return BadRequest("Book ID mismatch");
 
-            var result = await _bookRepository.UpdateBookAsync(book);
+            var result = await _bookService.UpdateBookAsync(book);
             if (result == 0) return NotFound();
             return NoContent();
         }
@@ -42,7 +42,7 @@ namespace Workshop_POC.Controllers.Books
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await _bookRepository.DeleteBookAsync(id);
+            var result = await _bookService.DeleteBookAsync(id);
             if (result == 0) return NotFound();
             return NoContent();
         }
